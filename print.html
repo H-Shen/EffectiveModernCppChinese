@@ -141,7 +141,7 @@
                 <div id="content" class="content">
                     <main>
                         <h2 id="简介"><a class="header" href="#简介">简介</a></h2>
-<p>如果你是一个有经验的C++程序员，像我一样，你在初次接触C++11时候会想：“是啊是啊，我明白了。这也是C++，就多了点东西罢了。”但是你接触越多，你会惊讶于改变如此之多。<code>auto</code>声明，范围<code>for</code>循环，<em>lambda</em>表达式，还有右值引用都改变了C++的面貌，不过没有新的并发特性。还有一些地道的表达方式的改变。<code>0</code>和<code>typedef</code>被请出去了，<code>nullptr</code>和别名声明加进来了。枚举现在应该是限域的了。应该更倾向于智能指针而不是原始指针了。移动对象通常比拷贝它们要好了。</p>
+<p>如果你是一位经验丰富的 C++ 程序员并且多少跟我差不多，那你在初次接触 C++11 的时候就会想，“是的，是的，我知道的。它还是 C++，就是多了点东西。”但随着你了解越多，你会为改变的幅度之巨感到震惊。<code>auto</code> 声明，基于 range 的 <code>for</code> 循环，<em>lambda</em> 表达式，还有右值引用完全改变了 C++ 的面貌，这还不说新的并发特性。然后还有一些惯常的改进。<code>0</code> 和 <code>typedef</code> 出局，<code>nullptr</code> 和别名声明新晋。枚举现在应该是限域的了。相比内置的指针类型，现在要更倾向去使用智能指针。移动对象通常也好过于拷贝它们。</p>
 <p>有很多C++11的东西要学，先不提C++14了。</p>
 <p>更重要的是，要学习怎样<strong>高效地</strong>使用新机能。如果你需要关于”现代“C++的特性的基础信息，学习资源有很多，但是你想找一些指南，教你怎样应用这些特性来写出正确、高效、可维护、可移植的程序，那就相当有挑战性了。这就是这本书的切入点。它不致力于介绍C++11和C++14的特性，而致力于它们的高效应用。</p>
 <p>书中这些信息被打碎成不同指导方针，称为<strong>条款</strong>。想理解类型推导的不同形式？或者想知道什么时候该用（或者不该用）<code>auto</code>声明？你对为什么<code>const</code>成员函数应当线程安全，怎样使用<code>std::unique_ptr</code>实现Pimpl惯用法，为何要避免<em>lambda</em>表达式用默认捕获模式，或者<code>std::atomic</code>与<code>volatile</code>的区别感兴趣吗？答案都在这里。而且，答案无关于平台，顺应于标准。这本书是关于<strong>可移植</strong>C++的。</p>
@@ -407,7 +407,7 @@ void f(T&amp; param);                       //传引用形参的模板
 <p>我们这样进行调用，</p>
 <pre><code class="language-cpp">f(name);                                //传数组给f
 </code></pre>
-<p><code>T</code>被推导为了真正的数组！这个类型包括了数组的大小，在这个例子中<code>T</code>被推导为<code>const char[13]</code>，<code>f</code>的形参（对这个数组的引用）的类型则为<code>const char (&amp;)[13]</code>。是的，这种语法看起来简直有毒，但是知道它将会让你在关心这些问题的人的提问中获得大神的称号。</p>
+<p><code>T</code>被推导为了真正的数组！这个类型包括了数组的大小，在这个例子中<code>T</code>被推导为<code>const char[13]</code>，<code>f</code>的形参（该数组的引用）的类型则为<code>const char (&amp;)[13]</code>。是的，这种语法看起来又臭又长，但是知道它将会让你在关心这些问题的人的提问中获得大神的称号。</p>
 <p>有趣的是，可声明指向数组的引用的能力，使得我们可以创建一个模板函数来推导出数组的大小：</p>
 <pre><code class="language-cpp">//在编译期间返回一个数组大小的常量值（//数组形参没有名字，
 //因为我们只关心数组的大小）
@@ -470,9 +470,9 @@ void f(ParmaType param);
 <pre><code class="language-cpp">const auto cx = x;
 </code></pre>
 <p>类型说明符是<code>const auto</code>。另一个：</p>
-<pre><code class="language-cpp">const auto &amp; rx=cx;
+<pre><code class="language-cpp">const auto&amp; rx = x;
 </code></pre>
-<p>类型说明符是<code>const auto&amp;</code>。在这里例子中要推导<code>x</code>，<code>rx</code>和<code>cx</code>的类型，编译器的行为看起来就像是认为这里每个声明都有一个模板，然后使用合适的初始化表达式进行调用：</p>
+<p>类型说明符是<code>const auto&amp;</code>。在这里例子中要推导<code>x</code>，<code>cx</code>和<code>rx</code>的类型，编译器的行为看起来就像是认为这里每个声明都有一个模板，然后使用合适的初始化表达式进行调用：</p>
 <pre><code class="language-cpp">template&lt;typename T&gt;            //概念化的模板用来推导x的类型
 void func_for_x(T param);
 
@@ -965,7 +965,7 @@ for(const std::pair&lt;std::string, int&gt;&amp; p : m)
 <p>基于这些原因我建议你优先考虑<code>auto</code>而非显式类型声明。然而<code>auto</code>也不是完美的。每个<code>auto</code>变量都从初始化表达式中推导类型，有一些表达式的类型和我们期望的大相径庭。关于在哪些情况下会发生这些问题，以及你可以怎么解决这些问题我们在<a href="2.Auto/../1.DeducingTypes/item2.html">Item2</a>和<a href="2.Auto/../2.Auto/item6.html">6</a>讨论，所以这里我不再赘述。我想把注意力放到你可能关心的另一点：使用auto代替传统类型声明对源码可读性的影响。</p>
 <p>首先，深呼吸，放松，<code>auto</code>是<strong>可选项</strong>，不是<strong>命令</strong>，在某些情况下如果你的专业判断告诉你使用显式类型声明比<code>auto</code>要更清晰更易维护，那你就不必再坚持使用<code>auto</code>。但是要牢记，C++没有在其他众所周知的语言所拥有的类型推导（<em>type inference</em>）上开辟新土地。其他静态类型的过程式语言（如C#、D、Sacla、Visual Basic）或多或少都有等价的特性，更不必提那些静态类型的函数式语言了（如ML、Haskell、OCaml、F#等）。在某种程度上，这是因为动态类型语言，如Perl、Python、Ruby等的成功；在这些语言中，几乎没有显式的类型声明。软件开发社区对于类型推导有丰富的经验，他们展示了在维护大型工业强度的代码上使用这种技术没有任何争议。</p>
 <p>一些开发者也担心使用<code>auto</code>就不能瞥一眼源代码便知道对象的类型，然而，IDE扛起了部分担子（也考虑到了<a href="2.Auto/../1.DeducingTypes/item4.html">Item4</a>中提到的IDE类型显示问题），在很多情况下，少量显示一个对象的类型对于知道对象的确切类型是有帮助的，这通常已经足够了。举个例子，要想知道一个对象是容器还是计数器还是智能指针，不需要知道它的确切类型。一个适当的变量名称就能告诉我们大量的抽象类型信息。</p>
-<p>真正的问题是显式指定类型可以避免一些微妙的错误，以及更具效率和正确性，而且，如果初始化表达式的类型改变，则<code>auto</code>推导出的类型也会改变，这意味着使用<code>auto</code>可以帮助我们完成一些重构工作。举个例子，如果一个函数返回类型被声明为<code>int</code>，但是后来你认为将它声明为<code>long</code>会更好，调用它作为初始化表达式的变量会自动改变类型，但是如果你不使用<code>auto</code>你就不得不在源代码中挨个找到调用地点然后修改它们。</p>
+<p>事实是显式指定类型通常只会引入一些微妙的错误，无论是在正确性还是效率方面。而且，如果初始化表达式的类型改变，则<code>auto</code>推导出的类型也会改变，这意味着使用<code>auto</code>可以帮助我们完成一些重构工作。举个例子，如果一个函数返回类型被声明为<code>int</code>，但是后来你认为将它声明为<code>long</code>会更好，调用它作为初始化表达式的变量会自动改变类型，但是如果你不使用<code>auto</code>你就不得不在源代码中挨个找到调用地点然后修改它们。</p>
 <p><strong>请记住：</strong></p>
 <ul>
 <li><code>auto</code>变量必须初始化，通常它可以避免一些移植性和效率性的问题，也使得重构更方便，还能让你少打几个字。</li>
@@ -1363,8 +1363,8 @@ auto result3 = lockAndCall(f3, f3m, nullptr);   //没问题
 <li>优先考虑<code>nullptr</code>而非<code>0</code>和<code>NULL</code></li>
 <li>避免重载指针和整型</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="条款九优先考虑别名声明而非typedefs"><a class="header" href="#条款九优先考虑别名声明而非typedefs">条款九：优先考虑别名声明而非<code>typedef</code>s</a></h2>
-<p><strong>Item 9: Prefer alias declarations to <code>typedef</code>s</strong></p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="条款九优先考虑别名声明而非typedef"><a class="header" href="#条款九优先考虑别名声明而非typedef">条款九：优先考虑别名声明而非<code>typedef</code></a></h2>
+<p><strong>Item 9: Prefer alias declarations to <code>typedef</code></strong></p>
 <p>我相信每个人都同意使用STL容器是个好主意，并且我希望<a href="3.MovingToModernCpp/../4.SmartPointers/item18.html">Item18</a>能说服你让你觉得使用<code>std:unique_ptr</code>也是个好主意，但我猜没有人喜欢写上几次 <code>std::unique_ptr&lt;std::unordered_map&lt;std::string, std::string&gt;&gt;</code>这样的类型，它可能会让你患上腕管综合征的风险大大增加。</p>
 <p>避免上述医疗悲剧也很简单，引入<code>typedef</code>即可：</p>
 <pre><code class="language-cpp">typedef
@@ -1543,7 +1543,7 @@ enum class Color;   //没问题
             };
 </code></pre>
 <p>这里值的范围从<code>0</code>到<code>0xFFFFFFFF</code>。除了在不寻常的机器上（比如一个<code>char</code>至少有32bits的那种），编译器都会选择一个比<code>char</code>大的整型类型来表示<code>Status</code>。</p>
-<p>为了高效使用内存，编译器通常在确保能包含所有枚举值的前提下为<code>enum</code>选择一个最小的底层类型。在一些情况下，编译器将会优化速度，舍弃大小，这种情况下它可能不会选择最小的底层类型，而是选择对优化大小有帮助的类型。为此，C++98只支持<code>enum</code>定义（所有枚举名全部列出来）；<code>enum</code>声明是不被允许的。这使得编译器能在使用之前为每一个<code>enum</code>选择一个底层类型。</p>
+<p>为了高效使用内存，编译器通常在确保能包含所有枚举值的前提下为<code>enum</code>选择一个最小的底层类型。在一些情况下，编译器将会优化速度，舍弃大小，这种情况下它可能不会选择最小的底层类型，但它们当然希望能够针对大小进行优化。为此，C++98只支持<code>enum</code>定义（所有枚举名全部列出来）；<code>enum</code>声明是不被允许的。这使得编译器能在使用之前为每一个<code>enum</code>选择一个底层类型。</p>
 <p>但是不能前置声明<code>enum</code>也是有缺点的。最大的缺点莫过于它可能增加编译依赖。再次考虑<code>Status</code> <code>enum</code>：</p>
 <pre><code class="language-cpp">enum Status { good = 0,
               failed = 1,
@@ -2587,7 +2587,7 @@ public:
 </code></pre>
 </li>
 </ul>
-<p>在C++14中，函数的返回类型推导存在（参阅<a href="4.SmartPointers/../1.DeducingTypes/item3.html">Item3</a>），意味着<code>makeInvestment</code>可以以更简单，更封装的方式实现：</p>
+<p>在C++14中，函数返回类型推导的存在（参阅<a href="4.SmartPointers/../1.DeducingTypes/item3.html">Item3</a>），意味着<code>makeInvestment</code>可以以更简单，更封装的方式实现：</p>
 <pre><code class="language-cpp">template&lt;typename... Ts&gt;
 auto makeInvestment(Ts&amp;&amp;... params)                 //C++14
 {
@@ -2614,7 +2614,7 @@ auto makeInvestment(Ts&amp;&amp;... params)                 //C++14
     return pInv;                                    //同之前一样
 }
 </code></pre>
-<p>我之前说过，当使用默认删除器时（如<code>delete</code>），你可以合理假设<code>std::unique_ptr</code>对象和原始指针大小相同。当自定义删除器时，情况可能不再如此。函数指针形式的删除器，通常会使<code>std::unique_ptr</code>的从一个字（<em>word</em>）大小增加到两个。对于函数对象形式的删除器来说，变化的大小取决于函数对象中存储的状态多少，无状态函数（stateless function）对象（比如不捕获变量的<em>lambda</em>表达式）对大小没有影响，这意味当自定义删除器可以实现为函数或者<em>lambda</em>时，尽量使用<em>lambda</em>：</p>
+<p>我之前说过，当使用默认删除器时（如<code>delete</code>），你可以合理假设<code>std::unique_ptr</code>对象和原始指针大小相同。当自定义删除器时，情况可能不再如此。函数指针形式的删除器，通常会使<code>std::unique_ptr</code>的大小从一个字（<em>word</em>）增加到两个。对于函数对象形式的删除器来说，变化的大小取决于函数对象中存储的状态多少，无状态函数（stateless function）对象（比如不捕获变量的<em>lambda</em>表达式）对大小没有影响，这意味当自定义删除器可以实现为函数或者<em>lambda</em>时，尽量使用<em>lambda</em>：</p>
 <pre><code class="language-cpp">auto delInvmt1 = [](Investment* pInvestment)        //无状态lambda的
                  {                                  //自定义删除器
                      makeLogEntry(pInvestment);
@@ -3027,8 +3027,8 @@ private:
 };
 </code></pre>
 <p>因为类<code>Widget</code>不再提到类型<code>std::string</code>，<code>std::vector</code>以及<code>Gadget</code>，<code>Widget</code>的使用者不再需要为了这些类型而引入头文件。 这可以加速编译，并且意味着，如果这些头文件中有所变动，<code>Widget</code>的使用者不会受到影响。</p>
-<p>一个已经被声明，却还未被实现的类型，被称为<strong>未完成类型</strong>（<em>incomplete type</em>）。 <code>Widget::Impl</code>就是这种类型。 你能对一个未完成类型做的事很少，但是声明一个指向它的指针是可以的。Pimpl惯用法利用了这一点。</p>
-<p>Pimpl惯用法的第一步，是声明一个数据成员，它是个指针，指向一个未完成类型。 第二步是动态分配和回收一个对象，该对象包含那些以前在原来的类中的数据成员。 内存分配和回收的代码都写在实现文件里，比如，对于类<code>Widget</code>而言，写在<code>Widget.cpp</code>里:</p>
+<p>一个已经被声明，却还未被实现的类型，被称为<strong>不完整类型</strong>（<em>incomplete type</em>）。 <code>Widget::Impl</code>就是这种类型。 你能对一个不完整类型做的事很少，但是声明一个指向它的指针是可以的。Pimpl惯用法利用了这一点。</p>
+<p>Pimpl惯用法的第一步，是声明一个数据成员，它是个指针，指向一个不完整类型。 第二步是动态分配和回收一个对象，该对象包含那些以前在原来的类中的数据成员。 内存分配和回收的代码都写在实现文件里，比如，对于类<code>Widget</code>而言，写在<code>Widget.cpp</code>里:</p>
 <pre><code class="language-cpp">#include &quot;widget.h&quot;             //以下代码均在实现文件“widget.cpp”里
 #include &quot;gadget.h&quot;
 #include &lt;string&gt;
@@ -3081,10 +3081,10 @@ Widget::Widget()                    //根据条款21，通过std::make_unique
 
 Widget w;                           //错误！
 </code></pre>
-<p>你所看到的错误信息根据编译器不同会有所不同，但是其文本一般会提到一些有关于“把<code>sizeof</code>或<code>delete</code>应用到未完成类型上”的信息。对于未完成类型，使用以上操作是禁止的。</p>
-<p>在Pimpl惯用法中使用<code>std::unique_ptr</code>会抛出错误，有点惊悚，因为第一<code>std::unique_ptr</code>宣称它支持未完成类型，第二Pimpl惯用法是<code>std::unique_ptr</code>的最常见的使用情况之一。 幸运的是，让这段代码能正常运行很简单。 只需要对上面出现的问题的原因有一个基础的认识就可以了。</p>
-<p>在对象<code>w</code>被析构时（例如离开了作用域），问题出现了。在这个时候，它的析构函数被调用。我们在类的定义里使用了<code>std::unique_ptr</code>，所以我们没有声明一个析构函数，因为我们并没有任何代码需要写在里面。根据编译器自动生成的特殊成员函数的规则（见 <a href="4.SmartPointers/../3.MovingToModernCpp/item17.html">Item17</a>），编译器会自动为我们生成一个析构函数。 在这个析构函数里，编译器会插入一些代码来调用类<code>Widget</code>的数据成员<code>pImpl</code>的析构函数。 <code>pImpl</code>是一个<code>std::unique_ptr&lt;Widget::Impl&gt;</code>，也就是说，一个使用默认删除器的<code>std::unique_ptr</code>。 默认删除器是一个函数，它使用<code>delete</code>来销毁内置于<code>std::unique_ptr</code>的原始指针。然而，在使用<code>delete</code>之前，通常会使默认删除器使用C++11的特性<code>static_assert</code>来确保原始指针指向的类型不是一个未完成类型。 当编译器为<code>Widget w</code>的析构生成代码时，它会遇到<code>static_assert</code>检查并且失败，这通常是错误信息的来源。 这些错误信息只在对象<code>w</code>销毁的地方出现，因为类<code>Widget</code>的析构函数，正如其他的编译器生成的特殊成员函数一样，是暗含<code>inline</code>属性的。 错误信息自身往往指向对象<code>w</code>被创建的那行，因为这行代码明确地构造了这个对象，导致了后面潜在的析构。</p>
-<p>为了解决这个问题，你只需要确保在编译器生成销毁<code>std::unique_ptr&lt;Widget::Impl&gt;</code>的代码之前， <code>Widget::Impl</code>已经是一个完成类型（<em>complete type</em>）。 当编译器“看到”它的定义的时候，该类型就成为完成类型了。 但是 <code>Widget::Impl</code>的定义在<code>widget.cpp</code>里。成功编译的关键，就是在<code>widget.cpp</code>文件内，让编译器在“看到” <code>Widget</code>的析构函数实现之前（也即编译器插入的，用来销毁<code>std::unique_ptr</code>这个数据成员的代码的，那个位置），先定义<code>Widget::Impl</code>。</p>
+<p>你所看到的错误信息根据编译器不同会有所不同，但是其文本一般会提到一些有关于“把<code>sizeof</code>或<code>delete</code>应用到不完整类型上”的信息。对于不完整类型，使用以上操作是禁止的。</p>
+<p>在Pimpl惯用法中使用<code>std::unique_ptr</code>会抛出错误，有点惊悚，因为第一<code>std::unique_ptr</code>宣称它支持不完整类型，第二Pimpl惯用法是<code>std::unique_ptr</code>的最常见的使用情况之一。 幸运的是，让这段代码能正常运行很简单。 只需要对上面出现的问题的原因有一个基础的认识就可以了。</p>
+<p>在对象<code>w</code>被析构时（例如离开了作用域），问题出现了。在这个时候，它的析构函数被调用。我们在类的定义里使用了<code>std::unique_ptr</code>，所以我们没有声明一个析构函数，因为我们并没有任何代码需要写在里面。根据编译器自动生成的特殊成员函数的规则（见 <a href="4.SmartPointers/../3.MovingToModernCpp/item17.html">Item17</a>），编译器会自动为我们生成一个析构函数。 在这个析构函数里，编译器会插入一些代码来调用类<code>Widget</code>的数据成员<code>pImpl</code>的析构函数。 <code>pImpl</code>是一个<code>std::unique_ptr&lt;Widget::Impl&gt;</code>，也就是说，一个使用默认删除器的<code>std::unique_ptr</code>。 默认删除器是一个函数，它使用<code>delete</code>来销毁内置于<code>std::unique_ptr</code>的原始指针。然而，在使用<code>delete</code>之前，通常会使默认删除器使用C++11的特性<code>static_assert</code>来确保原始指针指向的类型不是一个不完整类型。 当编译器为<code>Widget w</code>的析构生成代码时，它会遇到<code>static_assert</code>检查并且失败，这通常是错误信息的来源。 这些错误信息只在对象<code>w</code>销毁的地方出现，因为类<code>Widget</code>的析构函数，正如其他的编译器生成的特殊成员函数一样，是暗含<code>inline</code>属性的。 错误信息自身往往指向对象<code>w</code>被创建的那行，因为这行代码明确地构造了这个对象，导致了后面潜在的析构。</p>
+<p>为了解决这个问题，你只需要确保在编译器生成销毁<code>std::unique_ptr&lt;Widget::Impl&gt;</code>的代码之前， <code>Widget::Impl</code>已经是一个完整类型（<em>complete type</em>）。 当编译器“看到”它的定义的时候，该类型就成为完整类型了。 但是 <code>Widget::Impl</code>的定义在<code>widget.cpp</code>里。成功编译的关键，就是在<code>widget.cpp</code>文件内，让编译器在“看到” <code>Widget</code>的析构函数实现之前（也即编译器插入的，用来销毁<code>std::unique_ptr</code>这个数据成员的代码的，那个位置），先定义<code>Widget::Impl</code>。</p>
 <p>做出这样的调整很容易。只需要先在<code>widget.h</code>里，只声明类<code>Widget</code>的析构函数，但不要在这里定义它：</p>
 <pre><code class="language-cpp">class Widget {                  //跟之前一样，在“widget.h”中
 public:
@@ -3134,7 +3134,7 @@ private:                                        //跟之前一样
     std::unique_ptr&lt;Impl&gt; pImpl;
 };
 </code></pre>
-<p>这样的做法会导致同样的错误，和之前的声明一个不带析构函数的类的错误一样，并且是因为同样的原因。 编译器生成的移动赋值操作符，在重新赋值之前，需要先销毁指针<code>pImpl</code>指向的对象。然而在<code>Widget</code>的头文件里，<code>pImpl</code>指针指向的是一个未完成类型。移动构造函数的情况有所不同。 移动构造函数的问题是编译器自动生成的代码里，包含有抛出异常的事件，在这个事件里会生成销毁<code>pImpl</code>的代码。然而，销毁<code>pImpl</code>需要<code>Impl</code>是一个完成类型。</p>
+<p>这样的做法会导致同样的错误，和之前的声明一个不带析构函数的类的错误一样，并且是因为同样的原因。 编译器生成的移动赋值操作符，在重新赋值之前，需要先销毁指针<code>pImpl</code>指向的对象。然而在<code>Widget</code>的头文件里，<code>pImpl</code>指针指向的是一个不完整类型。移动构造函数的情况有所不同。 移动构造函数的问题是编译器自动生成的代码里，包含有抛出异常的事件，在这个事件里会生成销毁<code>pImpl</code>的代码。然而，销毁<code>pImpl</code>需要<code>Impl</code>是一个完整类型。</p>
 <p>因为这个问题同上面一致，所以解决方案也一样——把移动操作的定义移动到实现文件里：</p>
 <pre><code class="language-cpp">class Widget {                          //仍然在“widget.h”中
 public:
@@ -3213,7 +3213,7 @@ auto w2(std::move(w1));     //移动构造w2
 w1 = std::move(w2);         //移动赋值w1
 </code></pre>
 <p>这些都能编译，并且工作地如我们所望：<code>w1</code>将会被默认构造，它的值会被移动进<code>w2</code>，随后值将会被移动回<code>w1</code>，然后两者都会被销毁（因此导致指向的<code>Widget::Impl</code>对象一并也被销毁）。</p>
-<p><code>std::unique_ptr</code>和<code>std::shared_ptr</code>在<code>pImpl</code>指针上的表现上的区别的深层原因在于，他们支持自定义删除器的方式不同。 对<code>std::unique_ptr</code>而言，删除器的类型是这个智能指针的一部分，这让编译器有可能生成更小的运行时数据结构和更快的运行代码。 这种更高效率的后果之一就是<code>std::unique_ptr</code>指向的类型，在编译器的生成特殊成员函数（如析构函数，移动操作）被调用时，必须已经是一个完成类型。 而对<code>std::shared_ptr</code>而言，删除器的类型不是该智能指针的一部分，这让它会生成更大的运行时数据结构和稍微慢点的代码，但是当编译器生成的特殊成员函数被使用的时候，指向的对象不必是一个完成类型。（译者注：知道<code>std::unique_ptr</code>和<code>std::shared_ptr</code>的实现，这一段才比较容易理解。）</p>
+<p><code>std::unique_ptr</code>和<code>std::shared_ptr</code>在<code>pImpl</code>指针上的表现上的区别的深层原因在于，他们支持自定义删除器的方式不同。 对<code>std::unique_ptr</code>而言，删除器的类型是这个智能指针的一部分，这让编译器有可能生成更小的运行时数据结构和更快的运行代码。 这种更高效率的后果之一就是<code>std::unique_ptr</code>指向的类型，在编译器的生成特殊成员函数（如析构函数，移动操作）被调用时，必须已经是一个完整类型。 而对<code>std::shared_ptr</code>而言，删除器的类型不是该智能指针的一部分，这让它会生成更大的运行时数据结构和稍微慢点的代码，但是当编译器生成的特殊成员函数被使用的时候，指向的对象不必是一个完整类型。（译者注：知道<code>std::unique_ptr</code>和<code>std::shared_ptr</code>的实现，这一段才比较容易理解。）</p>
 <p>对于Pimpl惯用法而言，在<code>std::unique_ptr</code>和<code>std::shared_ptr</code>的特性之间，没有一个比较好的折中。 因为对于像<code>Widget</code>的类以及像<code>Widget::Impl</code>的类之间的关系而言，他们是独享占有权关系，这让<code>std::unique_ptr</code>使用起来很合适。 然而，有必要知道，在其他情况中，当共享所有权存在时，<code>std::shared_ptr</code>是很适用的选择的时候，就没有<code>std::unique_ptr</code>所必需的声明——定义（function-definition）这样的麻烦事了。</p>
 <p><strong>请记住：</strong></p>
 <ul>
@@ -3639,7 +3639,7 @@ reduceAndCopy(T&amp;&amp; frac)             //通用引用的形参
     return std::move(w);            //把w看成右值，因为不执行拷贝消除
 }
 </code></pre>
-<p>这种情况与按值返回函数形参的情况很像。形参们没资格参与函数返回值的拷贝消除，但是如果作为返回值的话编译器会将其视作右值。结果就是，如果代码如下：</p>
+<p>这种情况与返回函数传值形参的情况很像。传值形参们没资格参与函数返回值的拷贝消除，但是如果作为返回值的话编译器会将其视作右值。结果就是，如果代码如下：</p>
 <pre><code class="language-cpp">Widget makeWidget(Widget w)         //传值形参，与函数返回的类型相同
 {
     …
@@ -4146,7 +4146,7 @@ T&amp;&amp; forward(remove_reference_t&lt;T&gt;&amp; param)
 <pre><code class="language-cpp">Widget widgetFactory();     //返回右值的函数
 Widget w;                   //一个变量（左值）
 func(w);                    //用左值调用func；T被推导为Widget&amp;
-func(widgetFactory());      //用又值调用func；T被推导为Widget
+func(widgetFactory());      //用右值调用func；T被推导为Widget
 </code></pre>
 <p>在auto的写法中，规则是类似的。声明</p>
 <pre><code class="language-cpp">auto&amp;&amp; w1 = w;
@@ -4683,7 +4683,7 @@ private:
     DataType pw;
 };
 
-auto func = IsValAndArch(std::make_unique&lt;Widget&gt;());
+auto func = IsValAndArch(std::make_unique&lt;Widget&gt;())();
 </code></pre>
 <p>这个代码量比<em>lambda</em>表达式要多，但这并不难改变这样一个事实，即如果你希望使用一个C++11的类来支持其数据成员的移动初始化，那么你唯一要做的就是在键盘上多花点时间。</p>
 <p>如果你坚持要使用<em>lambda</em>（并且考虑到它们的便利性，你可能会这样做），移动捕获可以在C++11中这样模拟：</p>
@@ -5389,7 +5389,7 @@ auto fut = pt.get_future();     //从pt获取future
 <p><code>std::packaged_task</code>不可拷贝，所以当<code>pt</code>被传递给<code>std::thread</code>构造函数时，必须先转为右值（通过<code>std::move</code>，参见<a href="7.TheConcurrencyAPI/../5.RRefMovSemPerfForw/item23.html">Item23</a>）：</p>
 <pre><code class="language-cpp">std::thread t(std::move(pt));   //在t上运行pt
 </code></pre>
-<p>这个例子是你对于<em>future</em>的析构函数的正常行为有一些了解，但是将这些语句放在一个作用域的语句块里更容易看：</p>
+<p>这个例子使你对于<em>future</em>的析构函数的正常行为有一些了解，但是将这些语句放在一个作用域的语句块里会使其更易于阅读：</p>
 <pre><code class="language-cpp">{                                   //开始代码块
     std::packaged_task&lt;int()&gt;
         pt(calcValue); 
@@ -5927,7 +5927,7 @@ private:
 <p>所以，正如我所说，当形参通过赋值进行拷贝时，分析按值传递的开销是复杂的。通常，最有效的经验就是“在证明没问题之前假设有问题”，就是除非已证明按值传递会为你需要的形参类型产生可接受的执行效率，否则使用重载或者通用引用的实现方式。</p>
 <p>到此为止，对于需要运行尽可能快的软件来说，按值传递可能不是一个好策略，因为避免即使开销很小的移动操作也非常重要。此外，有时并不能清楚知道会发生多少次移动操作。在<code>Widget::addName</code>例子中，按值传递仅多了一次移动操作，但是如果<code>Widget::addName</code>调用了<code>Widget::validateName</code>，这个函数也是按值传递。（假定它有理由总是拷贝它的形参，比如把验证过的所有值存在一个数据结构中。）并假设<code>validateName</code>调用了第三个函数，也是按值传递……</p>
 <p>可以看到这将会通向何方。在调用链中，每个函数都使用传值，因为“只多了一次移动的开销”，但是整个调用链总体就会产生无法忍受的开销，通过引用传递，调用链不会增加这种开销。</p>
-<p>跟性能无关，但总是需要考虑的是，按值传递不像按引用传递那样会收到切片问题的影响。这是C++98的事，在此不在详述，但是如果要设计一个函数，来处理这样的形参：基类<strong>或者任何其派生类</strong>，你肯定不想声明一个那个类型的传值形参，因为你会“切掉”传入的任意派生类对象的派生类特征：</p>
+<p>跟性能无关，但总是需要考虑的是，不像按引用传递，按值传递会受到切片问题的影响。这是C++98的事，在此不在详述，但是如果要设计一个函数，来处理这样的形参：基类<strong>或者任何其派生类</strong>，你肯定不想声明一个那个类型的传值形参，因为你会“切掉”传入的任意派生类对象的派生类特征：</p>
 <pre><code class="language-cpp">class Widget { … };                         //基类
 class SpecialWidget: public Widget { … };   //派生类
 void processWidget(Widget w);               //对任意类型的Widget的函数，包括派生类型
